@@ -2,7 +2,7 @@ name: Feed
 on: [workflow_dispatch]
 
 jobs:
-  limelight:
+  fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: appleboy/ssh-action@v1
@@ -10,60 +10,10 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
           script: |
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm use 22
             cd ${{ secrets.URL_MAIN }}
-            node ${{ secrets.URL_MINOR }} --brand ${{ secrets.B1 }} --collections 5
-  maria-b:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 22
-            cd ${{ secrets.URL_MAIN }}
-            node ${{ secrets.URL_MINOR }} --brand ${{ secrets.B2 }} --collections 5
-  saya:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 22
-            cd ${{ secrets.URL_MAIN }}
-            node ${{ secrets.URL_MINOR }} --brand ${{ secrets.B3 }} --collections 5
-  nishat:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 22
-            cd ${{ secrets.URL_MAIN }}
-            node ${{ secrets.URL_MINOR }} --brand ${{ secrets.B4 }} --collections 5
-  sana-safinaz:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm use 22
-            cd ${{ secrets.URL_MAIN }}
-            node ${{ secrets.URL_MINOR }} --brand ${{ secrets.B5 }} --collections 5
+            node ${{ secrets.URL_MINOR }} --collections 5
