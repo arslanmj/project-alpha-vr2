@@ -1,0 +1,21 @@
+name: R2
+on: [workflow_dispatch]
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
+          script: |
+            export R2_ACCESS_KEY=${{ secrets.R2_ACCESS_KEY }}
+            export R2_SECRET_KEY=${{ secrets.R2_SECRET_KEY }}
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm use 22
+            cd ${{ secrets.URL_MAIN }}
+            node ${{ secrets.URL_MINOR_R2 }} 20
