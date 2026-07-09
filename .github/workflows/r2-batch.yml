@@ -19,7 +19,6 @@ jobs:
           CDN: ${{ secrets.CDN }}
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY: ${{ secrets.API_KEY }}
-          BATCH_SIZE: 5
         run: |
           OFFSET=0
           while true; do
