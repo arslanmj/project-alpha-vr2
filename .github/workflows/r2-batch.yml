@@ -1,0 +1,38 @@
+name: R2 Batch
+on: [workflow_dispatch]
+
+jobs:
+  batch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install @aws-sdk/client-s3 p-limit node-fetch sharp
+      - name: Process image batch
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY: ${{ secrets.R2_ACCESS_KEY }}
+          R2_SECRET_KEY: ${{ secrets.R2_SECRET_KEY }}
+          BUCKET: ${{ secrets.BUCKET }}
+          CDN: ${{ secrets.CDN }}
+          API_BASE: ${{ secrets.API_BASE }}
+          API_KEY: ${{ secrets.API_KEY }}
+          BATCH_SIZE: 5
+        run: |
+          OFFSET=0
+          while true; do
+            echo "▶️ Offset $OFFSET"
+            BATCH_OFFSET=$OFFSET node image_processor.js
+            STATUS=$?
+            if [ $STATUS -eq 10 ]; then
+              OFFSET=$((OFFSET + 300))
+            elif [ $STATUS -eq 0 ]; then
+              echo "🏁 Done."
+              break
+            else
+              echo "❌ Error"
+              exit 1
+            fi
+          done
