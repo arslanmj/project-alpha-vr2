@@ -5,6 +5,8 @@ on:
     workflows: ["R2 Batch"]
     types: [completed]
 
+concurrency: r2-loop
+
 jobs:
   restart:
     runs-on: ubuntu-latest
