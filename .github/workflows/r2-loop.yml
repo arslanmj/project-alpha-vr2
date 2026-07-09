@@ -1,0 +1,21 @@
+name: R2 Loop
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["R2 Batch"]
+    types: [completed]
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check remaining
+        run: |
+          REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_BASE }}/r2-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
+          echo "REMAINING=$REMAINING" >> $GITHUB_ENV
+      - name: Trigger next batch
+        if: env.REMAINING > 0
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: r2-batch.yml
+          token: ${{ secrets.PAT_TOKEN }}
