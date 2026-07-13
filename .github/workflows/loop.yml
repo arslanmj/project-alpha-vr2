@@ -11,9 +11,8 @@ jobs:
     steps:
       - name: Check remaining
         run: |
-          REMAINING=$(curl -s ${{ secrets.STATUS }} | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
+          REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_BASE }}/fetch-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
           echo "REMAINING=$REMAINING" >> $GITHUB_ENV
-      
       - name: Trigger next run
         if: env.REMAINING > 0
         uses: benc-uk/workflow-dispatch@v1
