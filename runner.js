@@ -117,6 +117,8 @@ async function run() {
 
   console.log(`Fetching: ${collection.brand_name} > ${collection.collection_url}`);
 
+  await new Promise(r => setTimeout(r, 3000 + Math.random() * 5000));
+  
   const productUrls = await fetchCollectionPage(collection.collection_url, collection.base_url);
   const toFetch = productUrls.slice(0, collection.fetch_limit);
 
@@ -139,7 +141,6 @@ async function run() {
     } catch(e) {
       console.error(`Error fetching ${url}: ${e.message}`);
     }
-    await new Promise(r => setTimeout(r, 1500 + Math.random() * 5000));
   }
 
   if (products.length > 0) {
