@@ -4,9 +4,9 @@ on: [workflow_dispatch]
 jobs:
   fetch:
     strategy:
-      max-parallel: 5
+      max-parallel: 3
       matrix:
-        slot: [1, 2, 3, 4, 5]
+        slot: [1, 2, 3]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
