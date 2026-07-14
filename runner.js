@@ -129,14 +129,21 @@ async function run() {
       const data = await fetchProductFromJS(url, storeUrl);
       if (data && data.price) {
         products.push({
-          ...data,
-          source_url: url,
-          image: data.images[0] || '',
-          compare_price: data.comparePrice,
-          stock_status: data.stockStatus,
-          promo_type: collection.type === 'sale' ? 'sale' : collection.type === 'new-arrival' ? 'new-arrival' : '',
-          brand_id: collection.brand_id
-        });
+  title: data.title,
+  price: data.price,
+  compare_price: data.comparePrice,
+  stock_status: data.stockStatus,
+  sizes: JSON.stringify(data.sizes || []),
+  tags: JSON.stringify(data.tags || []),
+  vendor: data.vendor || '',
+  description: data.description || '',
+  type: data.type || '',
+  images: data.images,
+  image: data.images[0] || '',
+  source_url: url,
+  promo_type: collection.type === 'sale' ? 'sale' : collection.type === 'new-arrival' ? 'new-arrival' : '',
+  brand_id: collection.brand_id
+});
       }
     } catch(e) {
       console.error(`Error fetching ${url}: ${e.message}`);
