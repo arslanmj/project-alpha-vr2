@@ -19,6 +19,22 @@ async function fetchCollectionPage(colUrl, baseUrl) {
   return [...new Set(productUrls)];
 }
 
+function extractSizes(variants, options) {
+  if (!variants?.length) return [];
+  const sizeIndex = (options || []).findIndex(opt => /size/i.test(opt.name));
+  if (sizeIndex >= 0) {
+    return [...new Set(variants.map(v => v[`option${sizeIndex + 1}`]).filter(Boolean))];
+  }
+  const counts = [0, 0, 0];
+  variants.forEach(v => {
+    if (v.option1) counts[0]++;
+    if (v.option2) counts[1]++;
+    if (v.option3) counts[2]++;
+  });
+  const bestIndex = counts.indexOf(Math.max(...counts));
+  return [...new Set(variants.map(v => v[`option${bestIndex + 1}`]).filter(Boolean))];
+}
+
 async function fetchProductFromJS(productUrl, storeUrl) {
   const handleMatch = productUrl.match(/\/products\/([^\/?]+)/);
   if (!handleMatch) return null;
@@ -51,43 +67,51 @@ async function fetchProductFromJS(productUrl, storeUrl) {
     price: rawPrice ? (rawPrice / (rawPrice > 100000 ? 100 : 1)) : null,
     comparePrice: rawCompare ? (rawCompare / (rawCompare > 100000 ? 100 : 1)) : null,
     stockStatus: data.available ? 'in_stock' : 'out_of_stock',
+    sizes: extractSizes(data.variants || [], data.options || []),
     images: (data.images || []).map(img => img.startsWith('//') ? 'https:' + img : img),
     tags: data.tags || [],
     vendor: data.vendor || null,
-    type: data.type || null
+    type: data.type || null,
+    description: data.description || null
   };
 }
 
+// CHANGE: unified to axios (was native fetch)
 async function getNextCollection() {
-  const res = await fetch(`${API_BASE}/fetch-next-collection`, {
+  const res = await axios.get(`${API_BASE}/fetch-next-collection`, {
     headers: { 'x-api-key': API_KEY }
   });
-  return res.json();
+  return res.data;
 }
 
+// CHANGE: unified to axios (was native fetch)
 async function saveProducts(collectionId, products, brandId) {
   const formatted = products.map(p => ({
     ...p,
     brand_id: brandId,
     slug: p.source_url ? p.source_url.split('/products/')[1]?.split('?')[0]?.replace(/\.html$/, '') : '',
-    promo_type: '' // will be set by collection type if needed
+    promo_type: p.promo_type || ''
   }));
-  await fetch(`${API_BASE}/save-products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY
-    },
-    body: JSON.stringify({ collection_id: collectionId, products: formatted })
-  });
+  await axios.post(`${API_BASE}/save-products`, 
+    { collection_id: collectionId, products: formatted },
+    { headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY } }
+  );
 }
 
 async function run() {
   const collection = await getNextCollection();
   console.log('Collection:', JSON.stringify(collection));
+
   if (collection.done) {
     console.log('No more collections to fetch.');
     process.exit(0);
+  }
+
+  // CHANGE: defensive check — fail gracefully instead of crashing on undefined fields
+  if (!collection.collection_url || !collection.base_url || !collection.id) {
+    console.error('Invalid collection payload received, likely a race condition on fetch-next-collection. Exiting cleanly.');
+    console.error('Payload was:', JSON.stringify(collection));
+    process.exit(0); // exit 0, not 1 — this run just had nothing valid to do, not a real failure
   }
 
   console.log(`Fetching: ${collection.brand_name} > ${collection.collection_url}`);
@@ -104,25 +128,21 @@ async function run() {
         products.push({
           ...data,
           source_url: url,
-          images: data.images,
           image: data.images[0] || '',
-          price: data.price,
           compare_price: data.comparePrice,
           stock_status: data.stockStatus,
-          type: data.type,
           promo_type: collection.type === 'sale' ? 'sale' : collection.type === 'new-arrival' ? 'new-arrival' : '',
-          brand_id: collection.brand_id // will be looked up server-side
+          brand_id: collection.brand_id
         });
       }
     } catch(e) {
       console.error(`Error fetching ${url}: ${e.message}`);
     }
-    // Small delay between products within the same IP run (we're on GitHub's IP, no need for huge delays)
     await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
   }
 
   if (products.length > 0) {
-    await saveProducts(collection.id, products, 0); // brand_id server-side
+    await saveProducts(collection.id, products, collection.brand_id);
     console.log(`Saved ${products.length} products.`);
   }
 
