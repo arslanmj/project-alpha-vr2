@@ -138,7 +138,7 @@ async function run() {
     } catch(e) {
       console.error(`Error fetching ${url}: ${e.message}`);
     }
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));
+    await new Promise(r => setTimeout(r, 1500 + Math.random() * 5000));
   }
 
   if (products.length > 0) {
