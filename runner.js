@@ -54,6 +54,7 @@ async function fetchProductFromJS(productUrl, storeUrl) {
     });
     data = response.data;
   } catch(e) {
+    console.error(`Failed ${jsUrl}: status=${e.response?.status || 'unknown'}`);
     return null;
   }
 
