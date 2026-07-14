@@ -84,6 +84,7 @@ async function saveProducts(collectionId, products, brandId) {
 
 async function run() {
   const collection = await getNextCollection();
+  console.log('Collection:', JSON.stringify(collection));
   if (collection.done) {
     console.log('No more collections to fetch.');
     process.exit(0);
