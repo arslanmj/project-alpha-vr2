@@ -117,7 +117,7 @@ async function run() {
 
   console.log(`Fetching: ${collection.brand_name} > ${collection.collection_url}`);
 
-  await new Promise(r => setTimeout(r, 3000 + Math.random() * 5000));
+  await new Promise(r => setTimeout(r, 5000 + Math.random() * 7000));
   
   const productUrls = await fetchCollectionPage(collection.collection_url, collection.base_url);
   const toFetch = productUrls.slice(0, collection.fetch_limit);
@@ -127,6 +127,8 @@ async function run() {
     try {
       const storeUrl = new URL(url).origin;
       const data = await fetchProductFromJS(url, storeUrl);
+       // Per-product delay: 3-8 seconds
+      await new Promise(r => setTimeout(r, 3000 + Math.random() * 5000));
       if (data && data.price) {
         products.push({
   title: data.title,
