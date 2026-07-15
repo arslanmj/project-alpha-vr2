@@ -109,7 +109,7 @@ async function run() {
   }
 
   // CHANGE: defensive check — fail gracefully instead of crashing on undefined fields
-  if (!collection.collection_url || !collection.base_url || !collection.id) {
+  if (!collection.collection_url || !collection.id) {
     console.error('Invalid collection payload received, likely a race condition on fetch-next-collection. Exiting cleanly.');
     console.error('Payload was:', JSON.stringify(collection));
     process.exit(0); // exit 0, not 1 — this run just had nothing valid to do, not a real failure
