@@ -1,4 +1,4 @@
-name: Maintenance
+name: Enrichment
 on: [workflow_dispatch]
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         env:
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY: ${{ secrets.API_KEY }}
-        run: node maintenance-runner.js
+        run: node enrichment-runner.js
 
   trigger-next:
     needs: enrich
