@@ -69,6 +69,7 @@ async function fetchProductFromJS(productUrl, storeUrl) {
     comparePrice: rawCompare ? (rawCompare / (rawCompare > 100000 ? 100 : 1)) : null,
     stockStatus: data.available ? 'in_stock' : 'out_of_stock',
     sizes: extractSizes(data.variants || [], data.options || []),
+    options_data: JSON.stringify(data.options || []),
     images: (data.images || []).map(img => img.startsWith('//') ? 'https:' + img : img),
     tags: data.tags || [],
     vendor: data.vendor || null,
