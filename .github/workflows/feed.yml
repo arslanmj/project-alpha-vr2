@@ -1,5 +1,8 @@
 name: Feed
 on: [workflow_dispatch]
+concurrency:
+  group: feed-workflow
+  cancel-in-progress: false
 
 jobs:
   fetch:
@@ -19,8 +22,13 @@ jobs:
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY: ${{ secrets.API_KEY }}
         run: node runner.js
+
+  trigger-next:
+    needs: fetch
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger next Feed if remaining
-        if: always()
         run: |
           REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_BASE }}/fetch-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
           if [ "$REMAINING" -gt 0 ]; then
