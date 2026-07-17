@@ -19,6 +19,11 @@ jobs:
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY: ${{ secrets.API_KEY }}
         run: node enrichment-runner-dry-run.js
+      - name: Upload dry-run report
+        uses: actions/upload-artifact@v4
+        with:
+          name: enrichment-dryrun-report
+          path: enrichment-dryrun-*.json
 
   trigger-next:
     needs: enrich
