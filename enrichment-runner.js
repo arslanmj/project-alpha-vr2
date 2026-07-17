@@ -43,37 +43,12 @@ function extractSizes(variants, options) {
 }
 
 function detectPriceChanges(oldProduct, newData) {
-  const notes = [];
   const rawPrice = newData.price;
   const rawCompare = newData.compare_at_price;
   const newPrice = rawPrice ? (rawPrice / (rawPrice > 100000 ? 100 : 1)) : null;
   const newCompare = rawCompare ? (rawCompare / (rawCompare > 100000 ? 100 : 1)) : null;
 
-  if (oldProduct.price !== null && newPrice !== null && oldProduct.price !== newPrice) {
-    notes.push({
-      flag: 'price_changed',
-      old: oldProduct.price,
-      new: newPrice,
-      at: new Date().toISOString()
-    });
-  }
-
-  if (oldProduct.compare_price !== null && newCompare === null) {
-    notes.push({
-      flag: 'compare_price_removed',
-      old: oldProduct.compare_price,
-      at: new Date().toISOString()
-    });
-  } else if (oldProduct.compare_price !== null && newCompare !== null && oldProduct.compare_price !== newCompare) {
-    notes.push({
-      flag: 'compare_price_changed',
-      old: oldProduct.compare_price,
-      new: newCompare,
-      at: new Date().toISOString()
-    });
-  }
-
-  return notes;
+  return { newPrice, newCompare };
 }
 
 async function getEnrichmentBatch(limit = 30) {
