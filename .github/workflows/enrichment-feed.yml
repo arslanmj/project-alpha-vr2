@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Wait then check remaining
         run: |
-          sleep 30
+          sleep $((9 + RANDOM % 7))
           REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_BASE }}/enrichment-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
           if [ "$REMAINING" -gt 0 ]; then
             curl -X POST -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
