@@ -79,7 +79,6 @@ async function run() {
 
   for (const product of batch.products) {
     console.log(`  Enriching #${product.id}: ${product.source_url}`);
-    const jsData = await fetchProductJS(product.source_url);
     const { data: jsData, status } = await fetchProductJS(product.source_url);
 
 if (!jsData) {
