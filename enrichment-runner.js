@@ -127,7 +127,7 @@ if (!jsData) {
     });
 
     // Delay between products: 8-12 seconds
-    await new Promise(r => setTimeout(r, 8000 + Math.random() * 4000));
+    await new Promise(r => setTimeout(r, 5000 + Math.random() * 4000));
   }
 
   if (updates.length > 0) {
