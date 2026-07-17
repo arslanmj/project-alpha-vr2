@@ -5,7 +5,7 @@ const API_KEY = process.env.API_KEY;
 
 async function fetchProductJS(sourceUrl) {
   const handleMatch = sourceUrl.match(/\/products\/([^\/?]+)/);
-  if (!handleMatch) return null;
+  if (!handleMatch) return { data: null, status: null };
   const handle = handleMatch[1].replace(/\.html$/, '');
   const storeUrl = new URL(sourceUrl).origin;
   const jsUrl = `${storeUrl}/products/${handle}.js`;
@@ -19,10 +19,11 @@ async function fetchProductJS(sourceUrl) {
       },
       timeout: 15000
     });
-    return response.data;
+    return { data: response.data, status: response.status };
   } catch(e) {
-    console.error(`Failed ${jsUrl}: status=${e.response?.status || 'unknown'}`);
-    return null;
+    const status = e.response?.status || null;
+    console.error(`Failed ${jsUrl}: status=${status || 'unknown'}`);
+    return { data: null, status };
   }
 }
 
@@ -79,10 +80,18 @@ async function run() {
   for (const product of batch.products) {
     console.log(`  Enriching #${product.id}: ${product.source_url}`);
     const jsData = await fetchProductJS(product.source_url);
-    if (!jsData) {
-      console.log('    Failed to fetch .js, skipping.');
-      continue;
-    }
+    const { data: jsData, status } = await fetchProductJS(product.source_url);
+
+if (!jsData) {
+  if (status === 404) {
+    updates.push({
+      id: product.id,
+      fields: { stock_status: 'out_of_stock' },
+      notes: [{ flag: 'not_found_404', at: new Date().toISOString() }]
+    });
+  }
+  continue;
+}
 
     // Build fields to update only if currently missing
     const fields = {};
