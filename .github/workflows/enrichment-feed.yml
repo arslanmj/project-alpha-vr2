@@ -1,4 +1,4 @@
-name: Enrichment
+name: Enrichment Feed
 on: [workflow_dispatch]
 
 jobs:
