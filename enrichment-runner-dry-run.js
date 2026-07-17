@@ -52,26 +52,30 @@ function detectPriceChanges(oldProduct, newData) {
   const newPrice = rawPrice ? (rawPrice / (rawPrice > 100000 ? 100 : 1)) : null;
   const newCompare = rawCompare ? (rawCompare / (rawCompare > 100000 ? 100 : 1)) : null;
 
-  if (oldProduct.price !== null && newPrice !== null && oldProduct.price !== newPrice) {
+  const oldPrice = Number(oldProduct.price);
+  const newPriceNum = Number(newPrice);
+  if (!isNaN(oldPrice) && !isNaN(newPriceNum) && oldPrice !== newPriceNum) {
     notes.push({
       flag: 'price_changed',
-      old: oldProduct.price,
-      new: newPrice,
+      old: oldPrice,
+      new: newPriceNum,
       at: new Date().toISOString()
     });
   }
 
-  if (oldProduct.compare_price !== null && newCompare === null) {
+  const oldCompare = Number(oldProduct.compare_price);
+  const newCompareNum = Number(newCompare);
+  if (!isNaN(oldCompare) && isNaN(newCompareNum)) {
     notes.push({
       flag: 'compare_price_removed',
-      old: oldProduct.compare_price,
+      old: oldCompare,
       at: new Date().toISOString()
     });
-  } else if (oldProduct.compare_price !== null && newCompare !== null && oldProduct.compare_price !== newCompare) {
+  } else if (!isNaN(oldCompare) && !isNaN(newCompareNum) && oldCompare !== newCompareNum) {
     notes.push({
       flag: 'compare_price_changed',
-      old: oldProduct.compare_price,
-      new: newCompare,
+      old: oldCompare,
+      new: newCompareNum,
       at: new Date().toISOString()
     });
   }
