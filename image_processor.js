@@ -15,7 +15,7 @@ const r2 = new S3Client({
 const BUCKET = process.env.BUCKET;
 const CDN_URL = process.env.CDN;
 const API_BASE = process.env.API_BASE;
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.API_KEY_R2;
 
 async function getBatch(limit = 50) {
   const res = await fetch(`${API_BASE}/image-queue?limit=${limit}`, {
