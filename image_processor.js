@@ -16,6 +16,7 @@ const BUCKET = process.env.BUCKET;
 const CDN_URL = process.env.CDN;
 const API_BASE = process.env.API_BASE;
 const API_KEY = process.env.API_KEY_R2;
+console.log('API_KEY value:', API_KEY);
 
 async function getBatch(limit = 50) {
   const url = `${API_BASE}/image-queue?limit=${limit}`;
