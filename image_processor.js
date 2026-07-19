@@ -22,6 +22,8 @@ async function getBatch(limit = 50) {
     headers: { 'x-api-key': API_KEY }
   });
   const data = await res.json();
+  console.log('API Response status:', res.status);
+  console.log('Products received:', (data.products || []).length);
   return data.products || [];
 }
 
