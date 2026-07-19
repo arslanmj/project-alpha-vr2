@@ -18,13 +18,15 @@ const API_BASE = process.env.API_BASE;
 const API_KEY = process.env.API_KEY_R2;
 
 async function getBatch(limit = 50) {
-  const res = await fetch(`${API_BASE}/image-queue?limit=${limit}`, {
+  const url = `${API_BASE}/image-queue?limit=${limit}`;
+  console.log('Calling:', url);
+  const res = await fetch(url, {
     headers: { 'x-api-key': API_KEY }
   });
-  const data = await res.json();
-  console.log('API Response status:', res.status);
-  console.log('Products received:', (data.products || []).length);
-  return data.products || [];
+  const text = await res.text();
+  console.log('Status:', res.status);
+  console.log('Body preview:', text.substring(0, 300));
+  return JSON.parse(text).products || [];
 }
 
 async function updateProduct(id, cdnImages, count) {
