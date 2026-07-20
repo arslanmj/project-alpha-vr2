@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check remaining
         run: |
-          REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY }}" ${{ secrets.API_BASE }}/r2-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
+          REMAINING=$(curl -s -H "x-api-key: ${{ secrets.API_KEY_R2 }}" ${{ secrets.API_BASE }}/r2-remaining | grep -o '"remaining":[0-9]*' | grep -o '[0-9]*')
           echo "REMAINING=$REMAINING" >> $GITHUB_ENV
       - name: Trigger next batch
         if: env.REMAINING > 0
