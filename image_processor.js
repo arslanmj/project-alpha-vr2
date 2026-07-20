@@ -61,22 +61,20 @@ async function downloadAndStream(url, brand, collection, productId, index) {
   return `${CDN_URL}/${key}`;
 }
 
-async function processBatch(offset = 0, batchSize = 300) {
+async function processBatch() {
   const products = await getBatch(50);
-  let imageQueue = [];
+  if (products.length === 0) {
+    console.log('✅ All images processed.');
+    process.exit(0);
+  }
 
+  let imageQueue = [];
   for (const product of products) {
     const images = JSON.parse(product.images || '[]');
     const cdnImages = JSON.parse(product.cdn_images || '[]');
     images.forEach((url, idx) => {
       if (!cdnImages[idx]) {
-        imageQueue.push({
-          url,
-          brand: product.brand_name,
-          collection: product.collection_name,
-          productId: product.id,
-          index: idx
-        });
+        imageQueue.push({ url, brand: product.brand_name, collection: product.collection_name, productId: product.id, index: idx });
       }
     });
   }
