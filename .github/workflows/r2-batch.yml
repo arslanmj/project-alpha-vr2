@@ -20,18 +20,16 @@ jobs:
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY_R2: ${{ secrets.API_KEY_R2 }}
         run: |
-          OFFSET=0
           while true; do
-            echo "▶️ Offset $OFFSET"
-            BATCH_OFFSET=$OFFSET node image_processor.js
-            STATUS=$?
-            if [ $STATUS -eq 10 ]; then
-              OFFSET=$((OFFSET + 300))
-            elif [ $STATUS -eq 0 ]; then
-              echo "🏁 Done."
-              break
-            else
-              echo "❌ Error"
-              exit 1
-            fi
+          node image_processor.js
+          STATUS=$?
+          if [ $STATUS -eq 10 ]; then
+          continue
+          elif [ $STATUS -eq 0 ]; then
+          echo "🏁 Done."
+          break
+          else
+          echo "❌ Error"
+          exit 1
+          fi
           done
